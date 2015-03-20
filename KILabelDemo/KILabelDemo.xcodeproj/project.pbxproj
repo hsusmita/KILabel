@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		69359CC91AB6B945003CC8D3 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69359CC81AB6B945003CC8D3 /* CoreText.framework */; };
+		69F671471AB802CC0045ACF8 /* KIListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69F671461AB802CC0045ACF8 /* KIListViewController.m */; };
 		C97DB2EE183A56EF0028EA5C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97DB2ED183A56EF0028EA5C /* Foundation.framework */; };
 		C97DB2F0183A56EF0028EA5C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97DB2EF183A56EF0028EA5C /* CoreGraphics.framework */; };
 		C97DB2F2183A56EF0028EA5C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97DB2F1183A56EF0028EA5C /* UIKit.framework */; };
@@ -36,6 +38,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		69359CC81AB6B945003CC8D3 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		69F671451AB802CC0045ACF8 /* KIListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KIListViewController.h; sourceTree = "<group>"; };
+		69F671461AB802CC0045ACF8 /* KIListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KIListViewController.m; sourceTree = "<group>"; };
 		C97DB2EA183A56EF0028EA5C /* KILabelDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KILabelDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C97DB2ED183A56EF0028EA5C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C97DB2EF183A56EF0028EA5C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -65,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69359CC91AB6B945003CC8D3 /* CoreText.framework in Frameworks */,
 				C97DB327183A59670028EA5C /* MessageUI.framework in Frameworks */,
 				C97DB2F0183A56EF0028EA5C /* CoreGraphics.framework in Frameworks */,
 				C97DB2F2183A56EF0028EA5C /* UIKit.framework in Frameworks */,
@@ -108,6 +114,7 @@
 		C97DB2EC183A56EF0028EA5C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				69359CC81AB6B945003CC8D3 /* CoreText.framework */,
 				C97DB326183A59670028EA5C /* MessageUI.framework */,
 				C97DB2ED183A56EF0028EA5C /* Foundation.framework */,
 				C97DB2EF183A56EF0028EA5C /* CoreGraphics.framework */,
@@ -125,6 +132,8 @@
 				C97DB2FF183A56EF0028EA5C /* Main.storyboard */,
 				C97DB302183A56EF0028EA5C /* KIViewController.h */,
 				C97DB303183A56EF0028EA5C /* KIViewController.m */,
+				69F671451AB802CC0045ACF8 /* KIListViewController.h */,
+				69F671461AB802CC0045ACF8 /* KIListViewController.m */,
 				C97DB305183A56EF0028EA5C /* Images.xcassets */,
 				C97DB2F4183A56EF0028EA5C /* Supporting Files */,
 			);
@@ -267,6 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69F671471AB802CC0045ACF8 /* KIListViewController.m in Sources */,
 				C97DB325183A57110028EA5C /* KILabel.m in Sources */,
 				C97DB304183A56EF0028EA5C /* KIViewController.m in Sources */,
 				C97DB2FE183A56EF0028EA5C /* KIAppDelegate.m in Sources */,

@@ -24,6 +24,7 @@
  ***********************************************************************************/
 
 #import "KILabel.h"
+#import <CoreText/CoreText.h>
 
 NSString * const KILabelLinkTypeKey = @"linkType";
 NSString * const KILabelRangeKey = @"range";
@@ -50,6 +51,8 @@ NSString * const KILabelLinkKey = @"link";
 
 // During a touch, range of text that is displayed as selected
 @property (nonatomic, assign) NSRange selectedRange;
+
+@property (nonatomic, assign) NSRange truncationRange;
 
 @end
 
@@ -208,11 +211,153 @@ NSString * const KILabelLinkKey = @"link";
     // label text properties.
     if (!text)
         text = @"";
-    
-    NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text attributes:[self attributesFromProperties]];
-    [self updateTextStoreWithAttributedString:attributedText];
+  NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text attributes:[self attributesFromProperties]];
+  [self updateTextStoreWithAttributedString:attributedText];
+
+//  [self appendToTextWithNoNewLine:attributedText.string];
+  [self appendTokenStringToText:attributedText.string];
+//  NSString *string;
+//  NSUInteger numberOfLines, index, stringLength = [text length];
+//  for (index = 0, numberOfLines = 0; index < stringLength; numberOfLines++)
+//    index = NSMaxRange([string lineRangeForRange:NSMakeRange(index, 0)]);
+//  
+//  NSLog(@"calculated inndex = %ld",index);
+//  NSInteger numberOfLines, index, numberOfGlyphs =
+//  [self.layoutManager numberOfGlyphs];
+//  NSRange lineRange;
+//  for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+//    [self.layoutManager lineFragmentRectForGlyphAtIndex:index
+//                                           effectiveRange:&lineRange];
+//    index = NSMaxRange(lineRange);
+//  }
+//  NSString *newString = [NSString stringWithFormat:@"%@...Read More",text];
+//
+//  
+//  _truncationRange = [newString rangeOfString:@"...Read More"];
+//
+//  NSArray *fragments = [text componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+//  NSLog(@"fragments = %@",fragments);
+//  NSString *last = [fragments firstObject];
+//  NSRange range1 = [self.layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:5];
+//  
+//
+//  if (range1.location == NSNotFound) {
+//    NSRange range = NSMakeRange(last.length - @"...Read More".length-1, @"...Read More".length+1);
+//    NSString *newString = [text stringByReplacingCharactersInRange:range withString:@"...Read More"];
+//    attributedText = [[NSAttributedString alloc] initWithString:newString attributes:[self attributesFromProperties]];
+//    [_textStorage setAttributedString:attributedText];
+//    [self.layoutManager setTextStorage:_textStorage];
+//    return;
+//  }
+//  range1.location -= @"...Read More".length+1;
+//  range1.length += @"...Read More".length+1;
+//  NSString *newString = [text stringByReplacingCharactersInRange:range1 withString:@"...Read More"];
+//  attributedText = [[NSAttributedString alloc] initWithString:newString attributes:[self attributesFromProperties]];
+//  [_textStorage setAttributedString:attributedText];
+//  [self.layoutManager setTextStorage:_textStorage];
+  
 }
 
+- (void)appendToTextWithNoNewLine:(NSString *)text {
+  NSRange range = [self.layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:text.length-1];
+//  NSRange tokenRange;
+//  CGRect lineRect = [self.layoutManager lineFragmentRectForGlyphAtIndex:text.length-1 effectiveRange:&tokenRange];
+//  NSLog(@"line rect = %f %f %f %f",lineRect.origin.x,lineRect.origin.y,lineRect.size.width,lineRect.size.height);
+  NSRange totalRange = [self.layoutManager glyphRangeForTextContainer:self.textContainer];
+
+  NSString *newString = text;
+  if (range.location != NSNotFound) {
+  range.length += @"...Read More".length+1;
+  range.location -= @"...Read More".length+1;
+     newString = [text stringByReplacingCharactersInRange:range withString:@"...Read More"];
+  }else {
+    NSLog(@"range not found");
+    NSArray *fragments = [text componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    //  NSLog(@"fragments = %@",fragments);
+    NSString *first = [fragments firstObject];
+    NSRange range = [self.layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:first.length-1];
+    range.length += @"...Read More".length+1;
+    range.location -= @"...Read More".length+1;
+    newString = [first stringByReplacingCharactersInRange:range withString:@"...Read More"];
+
+  }
+  NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:newString attributes:[self attributesFromProperties]];
+  [_textStorage setAttributedString:attributedText];
+  [self.layoutManager setTextStorage:_textStorage];
+}
+
+- (void)appendTokenStringToText:(NSString *)text {
+  NSLog(@"total length = %zd",text.length);
+
+//  NSInteger glyphIndex = [self.layoutManager glyphIndexForCharacterAtIndex:text.length - 1];
+//  NSRange range = [self.layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:glyphIndex];
+//  string = [string stringByReplacingCharactersInRange:NSMakeRange(glyphIndex + 1, text.length-glyphIndex) withString:@""];
+  NSString *newString = text;
+//  if (range.location != NSNotFound) {
+//    range.length += @"...Read More".length + 1;
+//    range.location -= @"...Read More".length + 1;
+//    newString = [text stringByReplacingCharactersInRange:range withString:@"...Read More"];
+//  }else {
+// 
+//
+//  }
+  NSRange range = [self rangeForTokenInsertion:text];
+  if (range.location == NSNotFound) {
+    NSRange newLineRange = [text rangeOfCharacterFromSet:[NSCharacterSet newlineCharacterSet]];
+    if (newLineRange.location != NSNotFound){
+      NSString *string = [self getFirstSegment:text];
+      NSLog(@"length = %zd",string.length);
+      NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:string attributes:[self attributesFromProperties]];
+      [_textStorage setAttributedString:attributedText];
+      [self.layoutManager setTextStorage:_textStorage];
+//      range = [self rangeForTokenInsertion:text];
+      range.length =  @"...Read More".length + 1;
+      range.location = string.length - @"...Read More".length - 1;
+
+      newString = [string stringByReplacingCharactersInRange:range withString:@"...Read More"];
+    }
+  }else {
+    newString = [text stringByReplacingCharactersInRange:range withString:@"...Read More"];
+  }
+  NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:newString attributes:[self attributesFromProperties]];
+  [_textStorage setAttributedString:attributedText];
+  [self.layoutManager setTextStorage:_textStorage];
+}
+
+- (NSRange )rangeForTokenInsertion:(NSString *)text {
+  NSInteger glyphIndex = [self.layoutManager glyphIndexForCharacterAtIndex:text.length - 1];
+  NSRange range = [self.layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:glyphIndex];
+  if (range.location != NSNotFound) {
+    range.length += @"...Read More".length + 1;
+    range.location -= @"...Read More".length + 1;
+  }else {
+
+  }
+  return range;
+}
+
+
+
+- (NSInteger)getLastGlyphIndexForText:(NSString *)text {
+  NSLog(@"length = %zd",text.length);
+  NSUInteger index = text.length -1;
+  NSCharacterSet *charset = [NSCharacterSet newlineCharacterSet];
+  
+  while ([charset longCharacterIsMember:[text characterAtIndex:index]]) {
+    index --;
+  }
+  return  [self.layoutManager glyphIndexForCharacterAtIndex:index];
+}
+
+- (NSString *)getFirstSegment:(NSString *)text {
+
+  NSArray *fragments = [text componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+//  NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:[fragments firstObject] attributes:[self attributesFromProperties]];
+//  [_textStorage setAttributedString:attributedText];
+//  [self.layoutManager setTextStorage:_textStorage];
+  return [fragments firstObject];
+}
+//533
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
     // Pass the text to the super class first
@@ -700,4 +845,144 @@ NSString * const KILabelLinkKey = @"link";
     return restyled;
 }
 
+//- (NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs
+//                 properties:(const NSGlyphProperty *)props
+//           characterIndexes:(const NSUInteger *)charIndexes
+//                       font:(UIFont *)aFont
+//              forGlyphRange:(NSRange)glyphRange {
+//  NSRange range = NSMakeRange(*charIndexes, charIndexes[glyphRange.length - 1] - charIndexes[0] + 1);
+//  _truncationRange = NSMakeRange(533, 12);
+//  NSRange targetRange = _truncationRange;
+//  NSRange intersectionRange = NSIntersectionRange(glyphRange, targetRange);
+//  NSLog(@"range = (%lu %lu), (%lu %lu)",(unsigned long)range.location,(unsigned long)range.length, (unsigned long)targetRange.location,(unsigned long)targetRange.length);
+//  NSLog(@"intersection range = (%lu %lu)",intersectionRange.location,intersectionRange.length);
+//  if (intersectionRange.length > 0) {
+//    NSLog(@"truncated read more");
+//  }
+//  NSLog(@"glyph range = (%lu %lu)",glyphRange.location,glyphRange.length);
+//  if (NSEqualRanges(intersectionRange, glyphRange)) {
+//    NSLog(@"Modify glyph range");
+//    NSInteger BUFFER_LEN = 100;
+//
+//    CGGlyph glyphBuffer[BUFFER_LEN];
+//    NSGlyphProperty propBuffer[BUFFER_LEN];
+//    NSUInteger index;
+//    
+//    range = (NSRange){ 0, 0 };
+//    
+//    range = (NSRange){ 0, 0 };
+//    
+//    for (index = 0; index < glyphRange.length; index++) {
+//      if (NSLocationInRange(charIndexes[index], targetRange)) {
+//        if ((index > 0) && (range.length == 0)) {
+//          // flush upto the current index (?)
+////          [layoutManager setGlyphs:glyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:(NSRange){glyphRange.location, index}];
+//        }
+//        if (range.length == BUFFER_LEN) {
+////          [layoutManager setGlyphs:glyphBuffer properties:propBuffer characterIndexes:charIndexes + range.location font:aFont forGlyphRange:(NSRange){ glyphRange.location + range.location, range.length }];
+//          range.length = 0;
+//        }
+//        
+//        if (range.length == 0) {
+//          range.location = index;
+//        }
+//        
+//        if (charIndexes[index] == targetRange.location) {
+//          UTF16Char ellipsis = 0x2026;
+//          if (CTFontGetGlyphsForCharacters((CTFontRef)aFont, &ellipsis, glyphBuffer + range.length, 1)) {
+//            propBuffer[range.length] = 0;
+//          } else {
+//            // The font doesn't have ellipsis, try rendering manually later
+//            glyphBuffer[range.length] = kCGFontIndexInvalid;
+//            propBuffer[range.length] = NSGlyphPropertyControlCharacter;
+//          }
+//        } else {
+//          glyphBuffer[range.length] = kCGFontIndexInvalid;
+//          propBuffer[range.length] = NSGlyphPropertyNull;
+//        }
+//        ++range.length;
+//      } else if (charIndexes[index] >= NSMaxRange(targetRange)) {
+//        // Past the truncated range
+//        break;
+//      }
+//    }
+//    
+//    if (range.length > 0) {
+////      [layoutManager setGlyphs:glyphBuffer properties:propBuffer characterIndexes:charIndexes + range.location font:aFont forGlyphRange:(NSRange){ glyphRange.location + range.location, range.length }];
+//    }
+//    
+//    if ((glyphRange.length - index) > 0) {
+////      [layoutManager setGlyphs:glyphs + index properties:props + index characterIndexes:charIndexes + index font:aFont forGlyphRange:(NSRange){ glyphRange.location + index, glyphRange.length - index}];
+//    }
+//    NSLog(@"glyph range in end = (%ld %ld)",glyphRange.location,glyphRange.length);
+//  }else {
+//    glyphRange = glyphRange;
+//  }
+//  
+//  
+//  [layoutManager setGlyphs:glyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+//
+//  return glyphRange.length ;
+//  //ange = (34 511), (533 12)
+//}
+
+//- (void)render {
+//
+//  if (intersectionRange.length > 0) {
+//    CGGlyph glyphBuffer[BUFFER_LEN];
+//    NSGlyphProperty propBuffer[BUFFER_LEN];
+//    NSUInteger index;
+//    
+//    range = (NSRange){ 0, 0 };
+//    
+//    for (index = 0; index < glyphRange.length; index++) {
+//      if (NSLocationInRange(charIndexes[index], targetRange)) {
+//        if ((index > 0) && (range.length == 0)) {
+//          // flush upto the current index (?)
+//          [layoutManager setGlyphs:glyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:(NSRange){glyphRange.location, index}];
+//        }
+//        if (range.length == BUFFER_LEN) {
+//          [layoutManager setGlyphs:glyphBuffer properties:propBuffer characterIndexes:charIndexes + range.location font:aFont forGlyphRange:(NSRange){ glyphRange.location + range.location, range.length }];
+//          range.length = 0;
+//        }
+//        
+//        if (range.length == 0) {
+//          range.location = index;
+//        }
+//        
+//        if (charIndexes[index] == targetRange.location) {
+//          UTF16Char ellipsis = 0x2026;
+//          if (CTFontGetGlyphsForCharacters((CTFontRef)aFont, &ellipsis, glyphBuffer + range.length, 1)) {
+//            propBuffer[range.length] = 0;
+//          } else {
+//            // The font doesn't have ellipsis, try rendering manually later
+//            glyphBuffer[range.length] = kCGFontIndexInvalid;
+//            propBuffer[range.length] = NSGlyphPropertyControlCharacter;
+//          }
+//        } else {
+//          glyphBuffer[range.length] = kCGFontIndexInvalid;
+//          propBuffer[range.length] = NSGlyphPropertyNull;
+//        }
+//        ++range.length;
+//      } else if (charIndexes[index] >= NSMaxRange(targetRange)) {
+//        // Past the truncated range
+//        break;
+//      }
+//    }
+//    
+//    if (range.length > 0) {
+//      [layoutManager setGlyphs:glyphBuffer properties:propBuffer characterIndexes:charIndexes + range.location font:aFont forGlyphRange:(NSRange){ glyphRange.location + range.location, range.length }];
+//    }
+//    
+//    if ((glyphRange.length - index) > 0) {
+//      [layoutManager setGlyphs:glyphs + index properties:props + index characterIndexes:charIndexes + index font:aFont forGlyphRange:(NSRange){ glyphRange.location + index, glyphRange.length - index}];
+//    }
+//    return glyphRange.length;
+//  } else {
+//    return 0;
+//  }
+//
+//}
+
+/*This is an interactive @label. Tap or hold http://www.google.com and #marvel!*/
 @end
