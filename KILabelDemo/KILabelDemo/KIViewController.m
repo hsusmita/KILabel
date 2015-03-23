@@ -81,69 +81,12 @@
     };
   self.label.lineBreakMode = NSLineBreakByWordWrapping;
 self.defaultLabel.text = @"safdskfkdfgdfgsfsdk\nfdsfdk";
-  self.label.text = @"http://www.google.com sit er elit lamet, \n \n  consectetaur \n \n \n cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.\n";
-//  NSRange range = [self.label.text rangeOfString:@"...Read More"];
-//  self.label.text = [self approximateTruncatedString];
+//  self.label.text = @"http://www.google.com sit er elit lamet1, \n \n \n 3consectetaur jhhjllllhlkllh \njhhjllllhlkllhvbvnvbnbvmb\n 5cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+//  [self.label setText:@"http://www.google.com sit er elit lamet1, \n \n \n 3consectetaur jhhjllllhlkllh \njhhjllllhlkllhvbvnvbnbvmb\n 5cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." withTokenString:@"...Read More"];
+  [self.label setText:@"http://www.google.com sit er elit lamet consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.\n" withTokenString:@"...Read More"];
 }
 
-- (NSString *)truncatedStringWithVisibleCharacterCount:(NSInteger)visibleCharacterCount {
-  NSString *truncationToken = @" ... Read More";
-  NSRange range = NSMakeRange(visibleCharacterCount,
-                              self.label.text.length - visibleCharacterCount);
-  
-  return [self.label.text stringByReplacingCharactersInRange:range withString:truncationToken];
-}
-
-- (NSString *)approximateTruncatedString {
-  NSString *truncationToken = @" ... Read More";
-
-  NSString *firstSegment =[[self truncate:self.label.text forLabel:self.label] firstObject];
-  NSInteger visibleCharacterCount = firstSegment.length - truncationToken.length;
-  NSString *approximateString = [self truncatedStringWithVisibleCharacterCount:visibleCharacterCount];
-  
-  NSArray *segments = [self truncate:approximateString forLabel:self.label];
-  if (segments.count > 1) {
-    NSString *truncatedString = [[self truncate:approximateString forLabel:self.label] lastObject];
-    visibleCharacterCount = firstSegment.length - truncationToken.length - truncatedString.length;
-    return [self truncatedStringWithVisibleCharacterCount:visibleCharacterCount];
-  }else {
-    return approximateString;
-  }
-  
-}
-
-- (NSArray *)truncate:(NSString *)text forLabel: (UILabel*) label {
-  NSMutableArray *textChunks = [[NSMutableArray alloc] init];
-  
-  NSString *chunk = [[NSString alloc] init];
-  NSMutableAttributedString *attrString = nil;
-  UIFont *uiFont = label.font;
-  CTFontRef ctFont = CTFontCreateWithName((__bridge CFStringRef)uiFont.fontName, uiFont.pointSize, NULL);
-  NSDictionary *attr = [NSDictionary dictionaryWithObject:(__bridge id)ctFont forKey:(id)kCTFontAttributeName];
-  attrString  = [[NSMutableAttributedString alloc] initWithString:text attributes:attr];
-  CTFramesetterRef frameSetter;
-  
-  
-  CFRange fitRange;
-  while (attrString.length>0) {
-    NSLog(@"bounds = %f %f",label.bounds.size.width,label.bounds.size.height);
-
-    frameSetter = CTFramesetterCreateWithAttributedString ((__bridge CFAttributedStringRef) attrString);
-    CTFramesetterSuggestFrameSizeWithConstraints(frameSetter, CFRangeMake(0,0), NULL, CGSizeMake(label.bounds.size.width, label.bounds.size.height), &fitRange);
-    CFRelease(frameSetter);
-    
-    chunk = [[attrString attributedSubstringFromRange:NSMakeRange(0, fitRange.length)] string];
-    
-    [textChunks addObject:chunk];
-    
-    [attrString setAttributedString: [attrString attributedSubstringFromRange:NSMakeRange(fitRange.length, attrString.string.length-fitRange.length)]];
-    
-  }
-  return textChunks;
-}
-
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 

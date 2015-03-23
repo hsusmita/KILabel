@@ -136,5 +136,6 @@ extern NSString * const KILabelLinkKey;
  * @return A dictionary containing the link.
  **/
 - (NSDictionary*)linkAtPoint:(CGPoint)point;
+- (void)setText:(NSString *)text withTokenString:(NSString *)tokenString;
 
 @end
