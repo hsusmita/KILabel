@@ -185,7 +185,8 @@ NSString * const KILabelLinkKey = @"link";
 {
     // Remove the current selection if the selection is changing
     if (self.selectedRange.length && !NSEqualRanges(self.selectedRange, range))
-        [_textStorage removeAttribute:NSBackgroundColorAttributeName range:self.selectedRange];
+      //commented for testing
+//        [_textStorage removeAttribute:NSBackgroundColorAttributeName range:self.selectedRange];
     
     // Apply the new selection to the text
     if (range.length && _selectedLinkBackgroundColour != nil)
@@ -218,9 +219,12 @@ NSString * const KILabelLinkKey = @"link";
 }
 
 - (void)setText:(NSString *)text withTokenString:(NSString *)tokenString {
-  [self setText:text];
   self.tokenString = tokenString;
-  [self setText:[self tokenAppendedString]];
+  [self setText:text];
+  [self tokenAppendedString];
+  [self.linkRanges enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    NSLog(@"link ranges = %@",[self.linkRanges objectAtIndex:idx]);
+  }];
 }
 
 - (NSString *)tokenAppendedString {
@@ -229,9 +233,14 @@ NSString * const KILabelLinkKey = @"link";
   NSRange range = [self rangeForTokenInsertion:currentText];
   if (range.location == NSNotFound) {
       range = [self rangeForTokenInsertionForStringWithNewLine:currentText];
-    }
+  }
   if (range.location != NSNotFound) {
-    newString = [currentText stringByReplacingCharactersInRange:range withString:self.tokenString];
+    [self.textStorage replaceCharactersInRange:range withString:self.tokenString];
+    [self.textStorage addAttribute:NSLinkAttributeName value:@"https://www.google.com" range:[self.textStorage.string rangeOfString:self.tokenString]];
+    NSMutableArray *array = [NSMutableArray arrayWithArray:self.linkRanges];
+    [array addObject:@{KILabelLinkKey:@"http://www.google.com",KILabelLinkTypeKey:@(KILinkTypeURL),KILabelRangeKey:[NSValue valueWithRange:range]}];
+    self.linkRanges = [NSArray arrayWithArray:array];
+//    self.linkRanges = [self getRangesForLinks:[[NSAttributedString alloc]initWithAttributedString:self.textStorage]];
   }
   return newString;
 }
@@ -410,7 +419,7 @@ NSString * const KILabelLinkKey = @"link";
         [rangesForLinks addObjectsFromArray:[self getRangesForHashtags:text.string]];
     
     if (self.linkDetectionTypes & KILinkTypeURL)
-        [rangesForLinks addObjectsFromArray:[self getRangesForURLs:self.attributedText]];
+        [rangesForLinks addObjectsFromArray:[self getRangesForURLs:text]];
     
     return rangesForLinks;
 }
@@ -478,6 +487,11 @@ NSString * const KILabelLinkKey = @"link";
     return rangesForHashtags;
 }
 
+- (NSArray *)getRangesForCustomLinks:(NSAttributedString *)text {
+  NSMutableArray *rangesForURLs = [[NSMutableArray alloc] init];
+  
+  return rangesForURLs;
+}
 
 - (NSArray *)getRangesForURLs:(NSAttributedString *)text
 {
@@ -764,5 +778,4 @@ NSString * const KILabelLinkKey = @"link";
     
     return restyled;
 }
-
 @end

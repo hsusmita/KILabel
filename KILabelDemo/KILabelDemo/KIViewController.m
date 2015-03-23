@@ -83,7 +83,7 @@
 self.defaultLabel.text = @"safdskfkdfgdfgsfsdk\nfdsfdk";
 //  self.label.text = @"http://www.google.com sit er elit lamet1, \n \n \n 3consectetaur jhhjllllhlkllh \njhhjllllhlkllhvbvnvbnbvmb\n 5cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 //  [self.label setText:@"http://www.google.com sit er elit lamet1, \n \n \n 3consectetaur jhhjllllhlkllh \njhhjllllhlkllhvbvnvbnbvmb\n 5cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." withTokenString:@"...Read More"];
-  [self.label setText:@"http://www.google.com sit er elit lamet consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.\n" withTokenString:@"...Read More"];
+  [self.label setText:@"http://www.google.com sit er elit lamet http://www.facebook.com consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.\n" withTokenString:@"...Read More"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -226,8 +226,9 @@ self.defaultLabel.text = @"safdskfkdfgdfgsfsdk\nfdsfdk";
 // otherwise put up an alert to the user.
 - (void)attemptOpenURL:(NSURL *)url
 {
-    BOOL safariCompatible = [url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"];
-    
+  NSLog(@"URL Scheme = %@",url.scheme);
+  BOOL safariCompatible = [url.scheme isEqualToString:@"http"] || [url.scheme isEqualToString:@"https"];
+  
     if (safariCompatible && [[UIApplication sharedApplication] canOpenURL:url])
     {
         [[UIApplication sharedApplication] openURL:url];
